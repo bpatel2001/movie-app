@@ -1,4 +1,5 @@
 import type { Route } from "./+types/home";
+import { Welcome } from "../welcome/welcome";
 import React, { useState } from "react";
 
 const TMDB_API_KEY = "1fd8202884d3443966a7fb925f1c679b";
@@ -22,11 +23,12 @@ export default function Home() {
     setResults([]);
     try {
       const res = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`
+        `https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_TMDB_API_KEY}&query=${encodeURIComponent(query)}`
       );
       const data = await res.json();
       setResults(data.results || []);
     } catch (err) {
+      console.log("TMDB API KEY:", import.meta.env.VITE_TMDB_API_KEY);
       setResults([]);
     }
     setLoading(false);
