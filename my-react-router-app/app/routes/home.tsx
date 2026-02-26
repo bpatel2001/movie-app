@@ -1,6 +1,8 @@
 import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
 import React, { useState } from "react";
+import { Link } from "react-router";
+import { useFavorites } from "../store/favorites";
 
 const TMDB_API_KEY = "1fd8202884d3443966a7fb925f1c679b";
 
@@ -15,6 +17,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -51,21 +54,43 @@ export default function Home() {
       </form>
       {loading && <div>Loading...</div>}
       <div>
-        {results.map((movie: any) => (
-          <div key={movie.id} style={{ marginBottom: "1em", display: "flex", alignItems: "center" }}>
-            {movie.poster_path && (
-              <img
-                src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
-                alt={movie.title}
-                style={{ marginRight: "1em", borderRadius: "4px" }}
-              />
-            )}
-            <div>
-              <div style={{ fontWeight: "bold" }}>{movie.title}</div>
-              <div style={{ color: "#666" }}>{movie.release_date}</div>
+        {results.map((movie: any) => {
+          const favorite = isFavorite(movie.id);
+          return (
+            <div key={movie.id} style={{ marginBottom: "1em", display: "flex", alignItems: "center" }}>
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  favorite ? removeFavorite(movie.id) : addFavorite(movie);
+                }}
+                aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+                style={{ background: "none", border: "none", cursor: "pointer", marginRight: "0.5em", fontSize: 24, color: favorite ? "#facc15" : "#ccc" }}
+                title={favorite ? "Remove from favorites" : "Add to favorites"}
+              >
+                {favorite ? "★" : "☆"}
+              </button>
+              <Link
+                to={`/movie/${movie.id}`}
+                style={{ textDecoration: "none", color: "inherit", flex: 1 }}
+              >
+                <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                  {movie.poster_path && (
+                    <img
+                      src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
+                      alt={movie.title}
+                      style={{ marginRight: "1em", borderRadius: "4px" }}
+                    />
+                  )}
+                  <div>
+                    <div style={{ fontWeight: "bold" }}>{movie.title}</div>
+                    <div style={{ color: "#666" }}>{movie.release_date}</div>
+                  </div>
+                </div>
+              </Link>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
