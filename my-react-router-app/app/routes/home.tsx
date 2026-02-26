@@ -18,6 +18,7 @@ export default function Home() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
+  
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -26,12 +27,12 @@ export default function Home() {
     setResults([]);
     try {
       const res = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_TMDB_API_KEY}&query=${encodeURIComponent(query)}`
+        `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`
       );
       const data = await res.json();
       setResults(data.results || []);
     } catch (err) {
-      console.log("TMDB API KEY:", import.meta.env.VITE_TMDB_API_KEY);
+      console.log("TMDB API KEY:", TMDB_API_KEY);
       setResults([]);
     }
     setLoading(false);
@@ -40,7 +41,7 @@ export default function Home() {
   return (
     <div>
       <h1>Movie Search Engine</h1>
-      <form onSubmit={handleSearch} style={{ margin: "2em 0" }}>
+      <form onSubmit={handleSearch} style={{ margin: "2em 0" }} data-testid="search-form">
         <input
           type="text"
           value={query}
