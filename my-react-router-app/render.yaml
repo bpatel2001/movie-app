@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: movie-app
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    autoDeploy: true
+    rootDir: .
+    dockerfilePath: Dockerfile
